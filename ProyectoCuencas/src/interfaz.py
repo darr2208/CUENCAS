@@ -40,7 +40,7 @@ def ejecutar_interfaz():
 
     if coordenadas:
         st.subheader("🗺️ Mapa con delimitación automática (rombo)")
-        geojson_data = mostrar_mapa_con_rombo(coordenadas)
+        geojson_data = mostrar_mapa_dibujable(coordenadas)
     else:
         st.info("Esperando coordenadas para mostrar el mapa...")
         return

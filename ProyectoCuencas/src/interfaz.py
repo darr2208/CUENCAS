@@ -16,7 +16,7 @@ def ejecutar_interfaz():
     """, unsafe_allow_html=True)
 
     st.title("🌍 Delimitación de Cuencas y Análisis Morfométrico")
-    st.markdown("Ingresa coordenadas o una ciudad. Se dibujará un rombo automáticamente y se calcularán los parámetros.")
+    st.markdown("Ingresa coordenadas o una ciudad. Se dibujará un rombo automáticamente lo que delimita la cuenca y se calcularán los parámetros.")
 
     with st.expander("🔎 Buscar ciudad"):
         ciudad = st.text_input("Ejemplo: Medellín, Colombia")
@@ -49,7 +49,7 @@ def ejecutar_interfaz():
         gdf, resultados = calcular_parametros(geojson_data)
         st.subheader("📊 Parámetros morfométricos calculados")
         df = pd.DataFrame([resultados])
-        st.dataframe(df.drop(columns=["Centroide X", "Centroide Y"]), use_container_width=True)
+        st.dataframe(df, use_container_width=True)
 
         col1, col2 = st.columns(2)
         with col1:
@@ -60,3 +60,4 @@ def ejecutar_interfaz():
             st.download_button("📥 Descargar Shapefile (.zip)", data=shapefile_zip, file_name="cuenca_shapefile.zip")
     else:
         st.warning("No se generó una geometría válida para calcular.")
+

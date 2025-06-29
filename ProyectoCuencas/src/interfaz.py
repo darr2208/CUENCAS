@@ -16,7 +16,7 @@ def ejecutar_interfaz():
     """, unsafe_allow_html=True)
 
     st.title("🌍 Delimitación de Cuencas y Análisis Morfométrico")
-    st.markdown("Ingresa coordenadas o una ciudad. Se dibujará un rombo automáticamente lo que delimita la cuenca y se calcularán los parámetros.")
+    st.markdown("Ingresa coordenadas o una ciudad. Se dibujará un rombo automáticamente que delimita la cuenca y se calcularán los parámetros.")
 
     with st.expander("🔎 Buscar ciudad"):
         ciudad = st.text_input("Ejemplo: Medellín, Colombia")
@@ -38,26 +38,30 @@ def ejecutar_interfaz():
         if lat != 0.0 or lon != 0.0:
             coordenadas = [lat, lon]
 
-    if coordenadas:
-        st.subheader("🗺️ Mapa con delimitación automática (rombo)")
-        geojson_data = mostrar_mapa_dibujable(coordenadas)
-    else:
+    if not coordenadas:
         st.info("Esperando coordenadas para mostrar el mapa...")
         return
 
-    if geojson_data and isinstance(geojson_data, dict) and "geometry" in geojson_data.get("geojson", {}):
-        gdf, resultados = calcular_parametros(geojson_data["geojson"])
-        st.subheader("📊 Parámetros morfométricos calculados")
-        df = pd.DataFrame([resultados])
-        st.dataframe(df, use_container_width=True)
+    st.subheader("🗺️ Mapa con delimitación automática (rombo o polígono)")
+    geojson_data = mostrar_mapa_dibujable(coordenadas)
 
-        col1, col2 = st.columns(2)
-        with col1:
-            excel = exportar_excel(resultados)
-            st.download_button("📥 Descargar Excel", data=excel, file_name="resultados_cuenca.xlsx")
-        with col2:
-            shapefile_zip = exportar_shapefile_zip(gdf)
-            st.download_button("📥 Descargar Shapefile (.zip)", data=shapefile_zip, file_name="cuenca_shapefile.zip")
+    if geojson_data and isinstance(geojson_data, dict) and geojson_data.get("tipo") == "cuenca":
+        geometria = geojson_data.get("geojson", {}).get("geometry")
+        if geometria and geometria.get("type") == "Polygon":
+            gdf, resultados = calcular_parametros(geojson_data["geojson"])
+            st.subheader("📊 Parámetros morfométricos calculados")
+            df = pd.DataFrame([resultados])
+            st.dataframe(df, use_container_width=True)
+
+            col1, col2 = st.columns(2)
+            with col1:
+                excel = exportar_excel(resultados)
+                st.download_button("📥 Descargar Excel", data=excel, file_name="resultados_cuenca.xlsx")
+            with col2:
+                shapefile_zip = exportar_shapefile_zip(gdf)
+                st.download_button("📥 Descargar Shapefile (.zip)", data=shapefile_zip, file_name="cuenca_shapefile.zip")
+        else:
+            st.warning("⚠️ Dibuja una cuenca válida (polígono cerrado con al menos 4 puntos).")
     else:
-        st.warning("⚠️ Dibuja una cuenca válida (rombo) o revisa que se haya generado la geometría correctamente.")
+        st.warning("⚠️ No se detectó una geometría válida para el análisis. Asegúrate de cerrar el polígono correctamente.")
 

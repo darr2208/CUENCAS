@@ -6,15 +6,40 @@ def mostrar_mapa_dibujable(coordenadas):
     lat, lon = coordenadas
     m = folium.Map(location=coordenadas, zoom_start=13, tiles="OpenStreetMap")
 
-    folium.TileLayer('Stamen Terrain').add_to(m)
-    folium.TileLayer('Stamen Toner').add_to(m)
-    folium.TileLayer('Stamen Watercolor').add_to(m)
-    folium.TileLayer('CartoDB positron').add_to(m)
-    folium.TileLayer('CartoDB dark_matter').add_to(m)
+    folium.TileLayer(
+        tiles='https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg',
+        attr='Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
+        name='Stamen Terrain'
+    ).add_to(m)
+
+    folium.TileLayer(
+        tiles='https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png',
+        attr='Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
+        name='Stamen Toner'
+    ).add_to(m)
+
+    folium.TileLayer(
+        tiles='https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg',
+        attr='Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
+        name='Stamen Watercolor'
+    ).add_to(m)
+
+    folium.TileLayer(
+        tiles='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        attr='© OpenStreetMap contributors © CARTO',
+        name='CartoDB positron'
+    ).add_to(m)
+
+    folium.TileLayer(
+        tiles='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+        attr='© OpenStreetMap contributors © CARTO',
+        name='CartoDB dark_matter'
+    ).add_to(m)
+
     folium.TileLayer(
         tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        attr='Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-        name='Satélite'
+        attr='Tiles © Esri',
+        name='Esri Satélite'
     ).add_to(m)
 
     delta = 0.01
@@ -52,4 +77,5 @@ def mostrar_mapa_dibujable(coordenadas):
             "coordinates": [[ [c[1], c[0]] for c in rombo_coords ]]
         }
     }
+
 

@@ -45,8 +45,8 @@ def ejecutar_interfaz():
         st.info("Esperando coordenadas para mostrar el mapa...")
         return
 
-    if geojson_data:
-        gdf, resultados = calcular_parametros(geojson_data)
+    if geojson_data and isinstance(geojson_data, dict) and "geometry" in geojson_data.get("geojson", {}):
+        gdf, resultados = calcular_parametros(geojson_data["geojson"])
         st.subheader("📊 Parámetros morfométricos calculados")
         df = pd.DataFrame([resultados])
         st.dataframe(df, use_container_width=True)
@@ -59,5 +59,5 @@ def ejecutar_interfaz():
             shapefile_zip = exportar_shapefile_zip(gdf)
             st.download_button("📥 Descargar Shapefile (.zip)", data=shapefile_zip, file_name="cuenca_shapefile.zip")
     else:
-        st.warning("No se generó una geometría válida para calcular.")
+        st.warning("⚠️ Dibuja una cuenca válida (rombo) o revisa que se haya generado la geometría correctamente.")
 

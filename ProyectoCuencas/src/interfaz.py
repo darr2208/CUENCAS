@@ -16,7 +16,7 @@ def ejecutar_interfaz():
     """, unsafe_allow_html=True)
 
     st.title("🌍 Delimitación de Cuencas y Análisis Morfométrico")
-    st.markdown("Ingresa coordenadas o una ciudad. Se dibujará un rombo automáticamente que delimita la cuenca y se calcularán los parámetros.")
+    st.markdown("Ingresa coordenadas o una ciudad. Se dibujará un rombo automáticamente lo que delimita la cuenca y se calcularán los parámetros.")
 
     with st.expander("🔎 Buscar ciudad"):
         ciudad = st.text_input("Ejemplo: Medellín, Colombia")
@@ -38,17 +38,16 @@ def ejecutar_interfaz():
         if lat != 0.0 or lon != 0.0:
             coordenadas = [lat, lon]
 
-    if not coordenadas:
+    if coordenadas:
+        st.subheader("🗺️ Mapa con delimitación automática (rombo)")
+        geojson_data = mostrar_mapa_dibujable(coordenadas)
+    else:
         st.info("Esperando coordenadas para mostrar el mapa...")
         return
 
-    st.subheader("🗺️ Mapa con delimitación automática (rombo o polígono)")
-    geojson_data = mostrar_mapa_dibujable(coordenadas)
-
-    if geojson_data and isinstance(geojson_data, dict) and geojson_data.get("tipo") == "cuenca":
-        geometria = geojson_data.get("geojson", {}).get("geometry")
-        if geometria and geometria.get("type") == "Polygon":
-            gdf, resultados = calcular_parametros(geojson_data["geojson"])
+    if geojson_data and isinstance(geojson_data, dict) and "geometry" in geojson_data:
+        try:
+            gdf, resultados = calcular_parametros(geojson_data)
             st.subheader("📊 Parámetros morfométricos calculados")
             df = pd.DataFrame([resultados])
             st.dataframe(df, use_container_width=True)
@@ -60,8 +59,7 @@ def ejecutar_interfaz():
             with col2:
                 shapefile_zip = exportar_shapefile_zip(gdf)
                 st.download_button("📥 Descargar Shapefile (.zip)", data=shapefile_zip, file_name="cuenca_shapefile.zip")
-        else:
-            st.warning("⚠️ Dibuja una cuenca válida (polígono cerrado con al menos 4 puntos).")
+        except Exception as e:
+            st.error(f"❌ Error al calcular parámetros: {str(e)}")
     else:
         st.warning("⚠️ No se detectó una geometría válida para el análisis. Asegúrate de cerrar el polígono correctamente.")
-

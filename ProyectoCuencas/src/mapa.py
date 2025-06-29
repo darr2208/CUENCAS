@@ -50,7 +50,12 @@ def mostrar_mapa_dibujable(coordenadas):
                     icon=folium.Icon(color="red", icon="info-sign")
                 ).add_to(m)
                 st_folium(m, width=900, height=600)
-            return {"tipo": "cuenca", "geojson": st_data["last_active_drawing"]}
+
+                return {
+                    "type": "Feature",
+                    "geometry": geometria,
+                    "properties": {}
+                }
 
         elif tipo == "Point":
             lat = geometria["coordinates"][1]
@@ -61,7 +66,6 @@ def mostrar_mapa_dibujable(coordenadas):
                 icon=folium.Icon(color="blue", icon="tint")
             ).add_to(m)
             st_folium(m, width=900, height=600)
-            return {"tipo": "punto_salida", "coordenadas": [lat, lon]}
 
     return None
 

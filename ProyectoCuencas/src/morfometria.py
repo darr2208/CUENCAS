@@ -13,17 +13,18 @@ def calcular_parametros(geojson_data):
     centroide = gdf_utm.geometry.centroid.iloc[0]
 
     area_km2 = area_m2 / 1e6
+    area_ha = area_m2 / 10000
     perimetro_km = perimetro_m / 1000
 
     longitud_cuenca_km = perimetro_km / 2
-    diametro_equivalente_km = sqrt((4 * area_km2) / pi)
-    coef_compacidad = perimetro_km / (2 * sqrt(pi * area_km2)) if area_km2 > 0 else 0
-    razon_elongacion = (2 * sqrt(area_km2 / pi)) / longitud_cuenca_km if longitud_cuenca_km > 0 else 0
-    indice_forma = area_km2 / (longitud_cuenca_km ** 2) if longitud_cuenca_km > 0 else 0
-
-    L = longitud_cuenca_km * 1000  # m
+    L = longitud_cuenca_km * 1000
     A = area_km2
     P = perimetro_km
+
+    diametro_equivalente_km = sqrt((4 * A) / pi)
+    coef_compacidad = P / (2 * sqrt(pi * A)) if A > 0 else 0
+    razon_elongacion = (2 * sqrt(A / pi)) / longitud_cuenca_km if longitud_cuenca_km > 0 else 0
+    indice_forma = A / (longitud_cuenca_km ** 2) if longitud_cuenca_km > 0 else 0
 
     giandotti = ((4 * sqrt(A) + 1.5 * L) / (25.3 * sqrt(A))) if A > 0 else 0
     bransby = (0.00032 * L ** 0.77 * A ** 0.385) if A > 0 else 0
@@ -35,20 +36,32 @@ def calcular_parametros(geojson_data):
     kirpich = (0.01947 * (L ** 0.77)) if L > 0 else 0
     temez = (0.778 * (L ** 0.467) / (A ** 0.2)) if A > 0 else 0
 
-    promedio = sum([giandotti, bransby, california, clark, passini,
-                    pilgrim, valencia, kirpich, temez]) / 9
+    promedio = sum([giandotti, bransby, california, clark, passini, pilgrim, valencia, kirpich, temez]) / 9
 
     resultados = {
-        "Área (km²)": round(area_km2, 2),
-        "Perímetro (km)": round(perimetro_km, 2),
-        "Centroide X": round(centroide.x, 2),
-        "Centroide Y": round(centroide.y, 2),
-        "Longitud de cuenca (km)": round(longitud_cuenca_km, 2),
-        "Diámetro equivalente (km)": round(diametro_equivalente_km, 2),
-        "Coef. de Compacidad": round(coef_compacidad, 4),
-        "Razón de Elongación": round(razon_elongacion, 4),
-        "Índice de Forma": round(indice_forma, 6),
-
+        "Area km2": round(A, 2),
+        "Area H": round(area_ha, 2),
+        "Per_Km": round(P, 2),
+        "Clasificación": "",
+        "Indice Compacidad": round(coef_compacidad, 4),
+        "tipo": "rombo",
+        "Longitud Cuenca": round(longitud_cuenca_km, 2),
+        "factor forma": round(razon_elongacion, 4),
+        "forma de la cuencaa": "",
+        "Longitud CP_L": round(L, 2),
+        "Longitud CP": round(L / 1000, 2),
+        "factorSinuosidad": "",
+        "clasificacion": "",
+        "Longitud Total Cauces": "",
+        "Densidad_drenajes": "",
+        "Clasificación": "",
+        "Cota_min": "",
+        "Cot_max": "",
+        "Dif_altura": "",
+        "Numero drenajes": "",
+        "Densi corrientes": "",
+        "slope(°)": "",
+        "slope(%)": "",
         "Giandotti (h)": round(giandotti, 2),
         "Bransby-Williams (h)": round(bransby, 2),
         "California Culvert Practice (h)": round(california, 2),

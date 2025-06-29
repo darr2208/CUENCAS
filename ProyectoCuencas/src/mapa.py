@@ -1,9 +1,9 @@
 import folium
 from streamlit_folium import st_folium
-from folium.plugins import Draw
 from shapely.geometry import Polygon
 
 def mostrar_mapa_dibujable(coordenadas):
+    lat, lon = coordenadas
     m = folium.Map(location=coordenadas, zoom_start=13, tiles="OpenStreetMap")
 
     folium.TileLayer('Stamen Terrain').add_to(m)
@@ -11,9 +11,12 @@ def mostrar_mapa_dibujable(coordenadas):
     folium.TileLayer('Stamen Watercolor').add_to(m)
     folium.TileLayer('CartoDB positron').add_to(m)
     folium.TileLayer('CartoDB dark_matter').add_to(m)
-    folium.TileLayer('Esri.WorldImagery', name='Satélite').add_to(m)
+    folium.TileLayer(
+        tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        attr='Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+        name='Satélite'
+    ).add_to(m)
 
-    lat, lon = coordenadas
     delta = 0.01
     rombo_coords = [
         [lat + delta, lon],
@@ -43,9 +46,10 @@ def mostrar_mapa_dibujable(coordenadas):
     st_folium(m, width=900, height=600)
 
     return {
-        "tipo": "cuenca",
+        "type": "Feature",
         "geometry": {
             "type": "Polygon",
             "coordinates": [[ [c[1], c[0]] for c in rombo_coords ]]
         }
     }
+

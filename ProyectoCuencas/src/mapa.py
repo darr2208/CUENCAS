@@ -5,13 +5,13 @@ def mostrar_mapa_dibujable(coordenadas):
     lat, lon = coordenadas
     m = folium.Map(location=coordenadas, zoom_start=13, tiles="OpenStreetMap")
 
-    delta = 0.01
+    delta = 0.01  # puedes ajustar este valor para agrandar o reducir el rombo
     rombo_coords = [
         [lat + delta, lon],
         [lat, lon + delta],
         [lat - delta, lon],
         [lat, lon - delta],
-        [lat + delta, lon]
+        [lat + delta, lon]  # cerrar el polígono
     ]
 
     folium.Polygon(
@@ -35,6 +35,6 @@ def mostrar_mapa_dibujable(coordenadas):
         "tipo": "cuenca",
         "geometry": {
             "type": "Polygon",
-            "coordinates": [[ [c[1], c[0]] for c in rombo_coords ]]
+            "coordinates": [[ [c[1], c[0]] for c in rombo_coords ]]  # invertir lat-lon a lon-lat
         }
     }

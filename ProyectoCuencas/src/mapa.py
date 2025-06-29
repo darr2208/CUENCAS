@@ -1,6 +1,5 @@
 import folium
 from streamlit_folium import st_folium
-from shapely.geometry import Polygon
 
 def mostrar_mapa_dibujable(coordenadas):
     lat, lon = coordenadas
@@ -27,19 +26,19 @@ def mostrar_mapa_dibujable(coordenadas):
     folium.TileLayer(
         tiles='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
         attr='© OpenStreetMap contributors © CARTO',
-        name='CartoDB positron'
+        name='CartoDB Positron'
     ).add_to(m)
 
     folium.TileLayer(
         tiles='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
         attr='© OpenStreetMap contributors © CARTO',
-        name='CartoDB dark_matter'
+        name='CartoDB Dark Matter'
     ).add_to(m)
 
     folium.TileLayer(
         tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         attr='Tiles © Esri',
-        name='Esri Satélite'
+        name='Satélite (Esri)'
     ).add_to(m)
 
     delta = 0.01
@@ -71,7 +70,7 @@ def mostrar_mapa_dibujable(coordenadas):
     st_folium(m, width=900, height=600)
 
     return {
-        "type": "Feature",
+        "tipo": "cuenca",
         "geometry": {
             "type": "Polygon",
             "coordinates": [[ [c[1], c[0]] for c in rombo_coords ]]

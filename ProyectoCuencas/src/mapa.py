@@ -3,7 +3,15 @@ from streamlit_folium import st_folium
 from folium.plugins import Draw
 
 def mostrar_mapa_dibujable(coordenadas):
-    m = folium.Map(location=coordenadas, zoom_start=13, tiles="OpenStreetMap")
+    m = folium.Map(location=coordenadas, zoom_start=14)
+
+    folium.TileLayer(
+        tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        attr='ESRI Satellite',
+        name='Satélite',
+        overlay=False,
+        control=True
+    ).add_to(m)
 
     draw = Draw(
         export=False,
@@ -42,13 +50,7 @@ def mostrar_mapa_dibujable(coordenadas):
                     icon=folium.Icon(color="red", icon="info-sign")
                 ).add_to(m)
                 st_folium(m, width=900, height=600)
-                return {
-                    "tipo": "cuenca",
-                    "geojson": {
-                        "type": "Feature",
-                        "geometry": geometria
-                    }
-                }
+            return {"tipo": "cuenca", "geojson": st_data["last_active_drawing"]}
 
         elif tipo == "Point":
             lat = geometria["coordinates"][1]
@@ -59,10 +61,7 @@ def mostrar_mapa_dibujable(coordenadas):
                 icon=folium.Icon(color="blue", icon="tint")
             ).add_to(m)
             st_folium(m, width=900, height=600)
-            return {
-                "tipo": "punto_salida",
-                "coordenadas": [lat, lon]
-            }
+            return {"tipo": "punto_salida", "coordenadas": [lat, lon]}
 
     return None
 

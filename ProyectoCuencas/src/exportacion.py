@@ -25,25 +25,23 @@ def exportar_excel(resultados_dict):
     tiempos_conc = {k: v for k, v in resultados_dict.items() if "h)" in k}
 
     wb = Workbook()
+
     ws1 = wb.active
     ws1.title = "Parámetros Geométricos"
-
+    df_geom = pd.DataFrame(parametros_geom.items(), columns=["Parámetro", "Valor"])
     ws1.append(['Parámetro', 'Valor'])
-    for k, v in parametros_geom.items():
-        ws1.append([k, v])
-
-    fila = ws1.max_row + 2
-    ws1.cell(row=fila, column=1, value="Coef. de Compacidad (fórmula)")
-    ws1.cell(row=fila, column=2, value="=B6/(2*RAIZ(PI()*B2))")
-    ws1.cell(row=fila+1, column=1, value="Razón de Elongación (fórmula)")
-    ws1.cell(row=fila+1, column=2, value="=(2*RAIZ(B2/PI()))/B5")
-    ws1.cell(row=fila+2, column=1, value="Índice de Forma (fórmula)")
-    ws1.cell(row=fila+2, column=2, value="=B2/(B5^2)")
+    for row in dataframe_to_rows(df_geom, index=False, header=False):
+        ws1.append(row)
 
     ws2 = wb.create_sheet(title="Tiempos de Concentración")
+    df_tc = pd.DataFrame(tiempos_conc.items(), columns=["Método", "Tiempo (h)"])
     ws2.append(['Método', 'Tiempo (h)'])
-    for k, v in tiempos_conc.items():
-        ws2.append([k, v])
+    for row in dataframe_to_rows(df_tc, index=False, header=False):
+        ws2.append(row)
+
+    last_row = ws2.max_row + 1
+    ws2[f"A{last_row}"] = "Promedio Tc (h)"
+    ws2[f"B{last_row}"] = f"=AVERAGE(B2:B{last_row - 1})"
 
     chart = BarChart()
     chart.title = "Comparativa de Métodos"
@@ -52,8 +50,8 @@ def exportar_excel(resultados_dict):
     chart.width = 20
     chart.height = 10
 
-    data = Reference(ws2, min_col=2, min_row=2, max_row=ws2.max_row)
-    cats = Reference(ws2, min_col=1, min_row=2, max_row=ws2.max_row)
+    data = Reference(ws2, min_col=2, min_row=2, max_row=last_row - 1)
+    cats = Reference(ws2, min_col=1, min_row=2, max_row=last_row - 1)
     chart.add_data(data, titles_from_data=False)
     chart.set_categories(cats)
     ws2.add_chart(chart, "E2")

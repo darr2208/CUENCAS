@@ -3,35 +3,7 @@ from streamlit_folium import st_folium
 from folium.plugins import Draw
 
 def mostrar_mapa_dibujable(coordenadas):
-    lat = coordenadas[0]
-    lon = coordenadas[1]
-    
     m = folium.Map(location=coordenadas, zoom_start=13, tiles="OpenStreetMap")
-
-    rombo_coords = [
-        [lat + 0.001, lon],
-        [lat, lon + 0.001],
-        [lat - 0.001, lon],
-        [lat, lon - 0.001],
-        [lat + 0.001, lon]
-    ]
-    folium.Polygon(
-        locations=rombo_coords,
-        color="green",
-        fill=True,
-        fill_color="lightgreen",
-        fill_opacity=0.5,
-        popup="Rombo automático"
-    ).add_to(m)
-
-    linea_coords = [[lat, lon], [lat - 0.0015, lon]]
-    folium.PolyLine(locations=linea_coords, color="blue", weight=3).add_to(m)
-
-    folium.Marker(
-        location=[lat, lon],
-        popup="📍 Punto de interés",
-        icon=folium.Icon(color="red", icon="info-sign")
-    ).add_to(m)
 
     draw = Draw(
         export=False,
